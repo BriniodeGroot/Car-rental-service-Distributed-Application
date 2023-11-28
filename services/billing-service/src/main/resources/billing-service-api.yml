@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: Billing Service v1
+  description: |-
+    API for Billing Service
+  termsOfService: http://swagger.io/terms/
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+paths:
+components:
+  schemas:
+    OpenUserBillCommand:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        doctorId:
+          type: integer
+        roomId:
+          type: integer
+        dayOfAppointment:
+          type: string
+          format: date
+    ClosePatientBillCommand:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        billId:
+          type: integer
+    PatientBillCreatedEvent:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        dayOfAppointment:
+          type: string
+          format: date
+        billCreated:
+          type: boolean
+        billId:
+          type: integer
+        error:
+          type: string
+    PatientBillTerminatedEvent:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        billId:
+          type: integer

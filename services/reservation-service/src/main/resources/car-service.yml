@@ -1,0 +1,320 @@
+openapi: 3.0.3
+info:
+  title: Car Service v1
+  description: |-
+    API for Car Service
+  termsOfService: http://swagger.io/terms/
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: Car
+    description: A vehicle for rental
+paths:
+  /api/v1/car:
+    post:
+      tags:
+        - Car
+      description: Create a new Car
+      operationId: createCar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiCar'
+      responses:
+        '200':
+          description: Successful operation
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/carByType:
+    get:
+      tags:
+        - Car
+      summary: Get all Cars from the system
+      description: Get all Cars from the system
+      operationId: getCarsByType
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: Return all cars that match this
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiCars'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/carByOwner:
+    get:
+      tags:
+        - Car
+      summary: Get all Cars from the system
+      description: Get all Cars from the system
+      operationId: getCarsByOwner
+      parameters:
+        - in: query
+          name: owner
+          schema:
+            type: string
+          description: Return all cars that match this
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiCars'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/cars/{id}/switchAvailability:
+    put:
+      tags:
+        - Car
+      summary: Toggle the availability of a car
+      description: Toggles the availability status of a car in the system
+      operationId: switchAvailability
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: The unique identifier of the car whose availability is to be toggled
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiCar'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Car Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/cars/{id}:
+    delete:
+      tags:
+        - Car
+      summary: Delete a car
+      description: Deletes a car from the system based on its unique identifier
+      operationId: deleteCar
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: The unique identifier of the car to be deleted
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Car Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/cars/search:
+    get:
+      tags:
+        - Car
+      summary: Search for the perfect car
+      description: Searches for cars based on type, location, and number of seats
+      operationId: searchCars
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: The type of the car to search for
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: The location where to search for the car
+        - in: query
+          name: seats
+          schema:
+            type: integer
+            format: int32
+          description: The number of seats required in the car
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiCars'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: No Cars Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+
+components:
+  schemas:
+    ApiCars:
+      type: array
+      items:
+        $ref: '#/components/schemas/ApiCar'
+    ApiCar:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        owner:
+          type: string
+          example: 'Brinio'
+        model:
+          type: string
+          example: 'Mercedes'
+        type:
+          type: string
+          example: 'SUV'
+        location:
+          type: string
+          example: 'Leuven'
+        price:
+          type: integer
+          example: 25
+        seats:
+          type: integer
+          example: 5
+        available:
+          type: boolean
+          example: true
+    CarCreatedEvent:
+      type: object
+      properties:
+        car:
+          $ref: '#/components/schemas/ApiCar'
+
+    ReserveCarCommand:
+      type: object
+      properties:
+        reservationId:
+          type: integer
+        neededCar:
+          type: integer
+
+    ReservedCarEvent:
+      type: object
+      properties:
+        reservationId:
+          type: integer
+          format: int64
+        carId:
+          type: integer
+          format: int64
+        owner:
+          type: string
+        model:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+        price:
+          type: integer
+        seats:
+          type: integer
+        available:
+          type: boolean
+
+    ApiError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'Functional code specifying the error'
+          example: '2300'
+        message:
+          type: string
+          description: 'Brief explanation about the error, for more information consult the Car Service team'
+    ApiSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message indicating the successful completion of the operation.
+        timestamp:
+          type: string
+          format: date-time
+          description: The timestamp at which the operation was completed.
+      example:
+        message: "Operation completed successfully"
+        timestamp: "2023-01-01T12:00:00Z"
+
+  

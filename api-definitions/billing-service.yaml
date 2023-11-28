@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: Accounting Service v1
+  description: |-
+    API for Accounting Service
+  termsOfService: http://swagger.io/terms/
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+paths:
+components:
+  schemas:
+    OpenPatientAccountCommand:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        doctorId:
+          type: integer
+        roomId:
+          type: integer
+        dayOfAppointment:
+          type: string
+          format: date
+    ClosePatientAccountCommand:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        accountId:
+          type: integer
+    PatientAccountCreatedEvent:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        dayOfAppointment:
+          type: string
+          format: date
+        accountCreated:
+          type: boolean
+        accountId:
+          type: integer
+        error:
+          type: string
+    PatientAccountTerminatedEvent:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        patientId:
+          type: integer
+        accountId:
+          type: integer

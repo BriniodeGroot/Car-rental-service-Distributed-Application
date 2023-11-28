@@ -1,0 +1,246 @@
+openapi: 3.0.3
+info:
+  title: Reservation Service v1
+  description: |-
+    API for Reservation Service
+  termsOfService: http://swagger.io/terms/
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: Reservation
+    description: A booking of a car
+paths:
+  /api/v1/reservation:
+    post:
+      tags:
+        - Reservation
+      description: Create a new Reservation
+      operationId: createReservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiReservation'
+      responses:
+        '200':
+          description: Successful operation
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/reservation-confirmation:
+    post:
+      tags:
+        - Reservation
+      description: Accept or Decline a previously requested reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiReservationConfirmation'
+      responses:
+        '200':
+          description: Successful operation
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/reservation-request:
+    post:
+      tags:
+        - Reservation
+      description: Create a new Reservation
+      operationId: createReservationRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiReservationRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiReservationRequestResponse'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/reservation/search:
+    get:
+      tags:
+        - Reservation
+      summary: Search for reservations by user's last name
+      description: Retrieves a list of reservations based on the last name of the user
+      operationId: searchReservationsByLastName
+      parameters:
+        - in: query
+          name: userLastName
+          required: true
+          schema:
+            type: string
+          description: The last name of the user to search for in reservations
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiReservations'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: No Reservations Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+
+components:
+  schemas:
+    ApiReservations:
+      type: array
+      items:
+        $ref: '#/components/schemas/ApiReservation'
+    ApiReservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        neededCar:
+          type: integer
+          format: int64
+          example: 11
+        userFirstName:
+          type: string
+          example: 'Patrick'
+        userLastName:
+          type: string
+          example: 'Willems'
+        preferredStart:
+          type: string
+          format: date
+          example: '2023-12-1'
+        preferredEnd:
+          type: string
+          format: date
+          example: '2023-12-4'
+    ReservationCreatedEvent:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        reservationRequestNumber:
+          type: string
+          example: "23-11-5678"
+        carId:
+          type: integer
+          format: int64
+          example: 11
+        userLastName:
+          type: string
+          example: 'Willems'
+        preferredStart:
+          type: string
+          format: date
+          example: '2023-12-1'
+        preferredEnd:
+          type: string
+          format: date
+          example: '2023-12-4'
+
+    ApiError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'Functional code specifying the error'
+          example: '2300'
+        message:
+          type: string
+          description: 'Brief explanation about the error, for more information consult the Car Service team'
+
+    ApiReservationRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        neededCar:
+          type: integer
+          format: int64
+          example: 11
+        userFirstName:
+          type: string
+          example: 'Patrick'
+        userLastName:
+          type: string
+          example: 'Willems'
+        preferredStart:
+          type: string
+          format: date
+          example: '2023-12-1'
+        preferredEnd:
+          type: string
+          format: date
+          example: '2023-12-4'
+
+    ApiReservationRequestResponse:
+      type: object
+      properties:
+        reservationRequestNumber:
+          type: string
+          example: "23-11-5678"
+
+    ApiReservationConfirmation:
+      type: object
+      properties:
+        reservationRequestNumber:
+          type: string
+          example: "23-11-5678"
+        acceptProposedReservation:
+          type: boolean
+
+    ReservationCreationFailedEvent:
+      type: object
+      properties:
+        reservationRequestNumber:
+          type: string
+          example: "23-11-5678"
+        error:
+          type: string
