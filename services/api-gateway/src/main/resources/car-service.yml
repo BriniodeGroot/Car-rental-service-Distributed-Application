@@ -250,11 +250,70 @@ components:
         available:
           type: boolean
           example: true
+
+    SwitchAvailabilityCommand:
+      type: object
+      properties:
+        carId:
+          type: integer
+
+    SwitchAvailabilityEvent:
+      type: object
+      properties:
+        carId:
+          type: integer
+
     CarCreatedEvent:
       type: object
       properties:
-        car:
-          $ref: '#/components/schemas/ApiCar'
+        id:
+          type: integer
+        owner:
+          type: string
+          example: 'Brinio'
+        model:
+          type: string
+          example: 'Mercedes'
+        type:
+          type: string
+          example: 'SUV'
+        location:
+          type: string
+          example: 'Leuven'
+        price:
+          type: integer
+          example: 25
+        seats:
+          type: integer
+          example: 5
+        available:
+          type: boolean
+          example: true
+
+    CarCreatedCommand:
+      type: object
+      properties:
+        owner:
+          type: string
+          example: 'Brinio'
+        model:
+          type: string
+          example: 'Mercedes'
+        type:
+          type: string
+          example: 'SUV'
+        location:
+          type: string
+          example: 'Leuven'
+        price:
+          type: integer
+          example: 25
+        seats:
+          type: integer
+          example: 5
+        available:
+          type: boolean
+          example: true
 
     ReserveCarCommand:
       type: object
