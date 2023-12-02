@@ -1,10 +1,8 @@
-package be.ucll.da.accountingservice.messaging;
+package be.ucll.da.billingservice.messaging;
 
-import be.ucll.da.accountingservice.api.messaging.model.ClosePatientAccountCommand;
-import be.ucll.da.accountingservice.api.messaging.model.OpenPatientAccountCommand;
-import be.ucll.da.accountingservice.api.messaging.model.PatientAccountCreatedEvent;
-import be.ucll.da.accountingservice.api.messaging.model.PatientAccountTerminatedEvent;
-import be.ucll.da.accountingservice.domain.AccountingService;
+import be.ucll.da.billingservice.api.messaging.model.CalculateUserBillCommand;
+import be.ucll.da.billingservice.api.messaging.model.UserBillCreatedEvent;
+import be.ucll.da.billingservice.domain.BillingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -20,48 +18,44 @@ public class MessageListener {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MessageListener.class);
 
-    private final AccountingService accountingService;
+    private final BillingService billingService;
     private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public MessageListener(AccountingService accountingService, RabbitTemplate rabbitTemplate) {
-        this.accountingService = accountingService;
+    public MessageListener(BillingService billingService, RabbitTemplate rabbitTemplate) {
+        this.billingService = billingService;
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @RabbitListener(queues = {"q.account-service.open-account"})
-    public void onOpenAccount(OpenPatientAccountCommand command) {
+    @RabbitListener(queues = {"q.bill-service.calculate-bill"})
+    public void onCalculateUserBill(CalculateUserBillCommand command) {
         LOGGER.info("Received command: " + command);
 
-        Integer accountId = accountingService.openAccount(command.getPatientId());
+        Integer billId = billingService.openBill(command.getUserId());
+        Integer amount = billingService.calculateAmount(command.getPrice(), command.getPreferredStart(), command.getPreferredEnd());
 
-        PatientAccountCreatedEvent event = new PatientAccountCreatedEvent();
-        event.appointmentId(command.getAppointmentId());
-        event.patientId(command.getPatientId());
-        event.dayOfAppointment(command.getDayOfAppointment());
-        if (accountId != -1) {
-            event.accountCreated(true);
-            event.accountId(accountId);
-        } else {
-            event.accountCreated(false);
-            event.error("There was an error opening the account");
-        }
+        UserBillCreatedEvent event = new UserBillCreatedEvent();
+
+        event.reservationId(command.getReservationId());
+        event.userId(command.getUserId());
+        event.billId(billId);
+        event.amount(amount);
 
         LOGGER.info("Sending event: " + event);
-        this.rabbitTemplate.convertAndSend("x.account-openings", "", event);
+        this.rabbitTemplate.convertAndSend("x.bill-calculated", "", event);
     }
 
-    @RabbitListener(queues = {"q.account-service.close-account"})
-    public void onCloseAccount(ClosePatientAccountCommand command) {
-        LOGGER.info("Received command: " + command);
-        accountingService.closeAccount(command.getAccountId());
-
-        PatientAccountTerminatedEvent event = new PatientAccountTerminatedEvent();
-        event.appointmentId(command.getAppointmentId());
-        event.accountId(command.getAccountId());
-        event.patientId(command.getPatientId());
-
-        LOGGER.info("Sending event: " + event);
-        this.rabbitTemplate.convertAndSend("x.account-terminations", "", event);
-    }
+//    @RabbitListener(queues = {"q.account-service.close-account"})
+//    public void onCloseAccount(ClosePatientAccountCommand command) {
+//        LOGGER.info("Received command: " + command);
+//        accountingService.closeAccount(command.getAccountId());
+//
+//        PatientAccountTerminatedEvent event = new PatientAccountTerminatedEvent();
+//        event.appointmentId(command.getAppointmentId());
+//        event.accountId(command.getAccountId());
+//        event.patientId(command.getPatientId());
+//
+//        LOGGER.info("Sending event: " + event);
+//        this.rabbitTemplate.convertAndSend("x.account-terminations", "", event);
+//    }
 }

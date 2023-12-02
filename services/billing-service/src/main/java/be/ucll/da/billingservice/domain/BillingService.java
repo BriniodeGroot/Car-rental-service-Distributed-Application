@@ -2,6 +2,9 @@ package be.ucll.da.billingservice.domain;
 
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 @Component
 public class BillingService {
 
@@ -16,7 +19,13 @@ public class BillingService {
         return -1;
     }
 
-    public boolean closeBill(Integer billId) {
-       return true;
+    public Integer calculateAmount(Integer price, LocalDate preferredStart, LocalDate preferredEnd) {
+        long daysBetween = ChronoUnit.DAYS.between(preferredStart, preferredEnd);
+        int result = Math.toIntExact(daysBetween * price);
+        return result;
     }
+
+//    public boolean closeBill(Integer billId) {
+//       return true;
+//    }
 }

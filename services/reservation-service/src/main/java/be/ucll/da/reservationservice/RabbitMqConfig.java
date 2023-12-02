@@ -42,86 +42,92 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    public Declarables createReserveCarQueue(){
+        return new Declarables(new Queue("q.car-service.reserve-car"));
+    }
+
+    @Bean
+    public Declarables createGetPriceCarQueue(){
+        return new Declarables(new Queue("q.car-service.getprice-car"));
+    }
+
+    @Bean
+    public Declarables createCreateBillQueue(){
+        return new Declarables(new Queue("q.bill-service.calculate-bill"));
+    }
+
+    @Bean
+    public Declarables createCreateCarQueue(){
+        return new Declarables(new Queue("q.car-service.create-car"));
+    }
+
+
+    @Bean
+    public Declarables createSwitchAvailabilityQueue(){
+        return new Declarables(new Queue("q.car-service.switch-availability"));
+    }
+
+    @Bean
+    public Declarables createCreateReservationQueue(){
+        return new Declarables(new Queue("q.reservation-service.create-reservation"));
+    }
+
+    @Bean
+    public Declarables creatFinalizeReservationQueue(){
+        return new Declarables(new Queue("q.reservation-service.finalize-reservation"));
+    }
+
+    @Bean
     public Declarables createUserValidatedExchange(){
         return new Declarables(
                 new FanoutExchange("x.user-validated"),
                 new Queue("q.user-validated.reservation-service" ),
-                new Binding("q.user-validated.reservation-service", Binding.DestinationType.QUEUE, "x.user-validated", "user-validated.reservation-service", null));
+                new Queue("q.user-validated.api-gateway"),
+                new Binding("q.user-validated.reservation-service", Binding.DestinationType.QUEUE, "x.user-validated", "user-validated.reservation-service", null),
+                new Binding("q.user-validated.api-gateway", Binding.DestinationType.QUEUE, "x.user-validated", "q.user-validated.api-gateway", null));
     }
 
-    @Bean
-    public Declarables createReserveCarQueue(){
-        return new Declarables(new Queue("q.car-service.reserve-car"));
-    }
 
     @Bean
     public Declarables createCarReservedExchange(){
         return new Declarables(
                 new FanoutExchange("x.car-reserved"),
                 new Queue("q.car-reserved.reservation-service" ),
-                new Binding("q.car-reserved.reservation-service", Binding.DestinationType.QUEUE, "x.car-reserved", "q.car-reserved.reservation-service", null));
+                new Queue("q.car-reserved.api-gateway"),
+                new Binding("q.car-reserved.reservation-service", Binding.DestinationType.QUEUE, "x.car-reserved", "q.car-reserved.reservation-service", null),
+                new Binding("q.car-reserved.api-gateway", Binding.DestinationType.QUEUE, "x.car-reserved", "q.car-reserved.api-gateway", null));
+
     }
 
-//    @Bean
-//    public Declarables createValidateDoctorQueue(){
-//        return new Declarables(new Queue("q.doctor-service.check-employed-doctors"));
-//    }
-//
-//    @Bean
-//    public Declarables createDoctorValidatedExchange(){
-//        return new Declarables(
-//                new FanoutExchange("x.doctors-employed"),
-//                new Queue("q.doctors-employed.appointment-service" ),
-//                new Binding("q.doctors-employed.appointment-service", Binding.DestinationType.QUEUE, "x.doctors-employed", "doctors-employed.appointment-service", null));
-//    }
-//
-//    @Bean
-//    public Declarables createBookRoomQueue(){
-//        return new Declarables(new Queue("q.room-service.book-room"));
-//    }
-//
-//    @Bean
-//    public Declarables createRoomBookedExchange(){
-//        return new Declarables(
-//                new FanoutExchange("x.room-bookings"),
-//                new Queue("q.room-bookings.appointment-service" ),
-//                new Binding("q.room-bookings.appointment-service", Binding.DestinationType.QUEUE, "x.room-bookings", "room-bookings.appointment-service", null));
-//    }
-//
-//    @Bean
-//    public Declarables createReleaseRoomQueue(){
-//        return new Declarables(new Queue("q.room-service.release-room"));
-//    }
-//
-//    @Bean
-//    public Declarables createRoomReleasedExchange(){
-//        return new Declarables(
-//                new FanoutExchange("x.room-releases"));
-//    }
-//
-//    @Bean
-//    public Declarables createOpenAccountQueue(){
-//        return new Declarables(new Queue("q.account-service.open-account"));
-//    }
-//
-//    @Bean
-//    public Declarables createAccountOpenedExchange(){
-//        return new Declarables(
-//                new FanoutExchange("x.account-openings"),
-//                new Queue("q.account-openings.appointment-service" ),
-//                new Binding("q.account-openings.appointment-service", Binding.DestinationType.QUEUE, "x.account-openings", "account-openings.appointment-service", null));
-//    }
-//
-//    @Bean
-//    public Declarables createCloseAccountQueue(){
-//        return new Declarables(new Queue("q.account-service.close-account"));
-//    }
-//
-//    @Bean
-//    public Declarables createAccountTerminationsExchange(){
-//        return new Declarables(
-//                new FanoutExchange("x.account-terminations"));
-//    }
+
+    @Bean
+    public Declarables createPriceCarExchange(){
+        return new Declarables(
+                new FanoutExchange("x.car-price"),
+                new Queue("q.car-priced.reservation-service" ),
+                new Queue("q.car-priced.api-gateway"),
+                new Binding("q.car-priced.reservation-service", Binding.DestinationType.QUEUE, "x.car-price", "q.car-priced.reservation-service", null),
+                new Binding("q.car-priced.api-gateway", Binding.DestinationType.QUEUE, "x.car-price", "q.car-priced.api-gateway", null));
+    }
+
+
+    @Bean
+    public Declarables createBillExchange(){
+        return new Declarables(
+                new FanoutExchange("x.bill-calculated"),
+                new Queue("q.bill-calculated.reservation-service" ),
+                new Queue("q.bill-created.api-gateway"),
+                new Binding("q.bill-calculated.reservation-service", Binding.DestinationType.QUEUE, "x.bill-calculated", "q.car-priced.reservation-service", null),
+                new Binding("q.bill-created.api-gateway", Binding.DestinationType.QUEUE, "x.bill-calculated", "q.bill-created.api-gateway", null));
+    }
+
+    @Bean
+    public Declarables createReservationFinalizedExchange(){
+        return new Declarables(
+                new FanoutExchange("x.reservation-finalized"),
+                new Queue("q.reservation-finalized.api-gateway" ),
+                new Binding("q.reservation-finalized.api-gateway", Binding.DestinationType.QUEUE, "x.reservation-finalized", "q.reservation-finalized.api-gateway", null));
+    }
 
     @Bean
     public Declarables createSendEmailQueue(){

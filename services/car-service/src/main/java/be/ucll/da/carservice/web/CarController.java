@@ -50,13 +50,13 @@ public class CarController implements CarApiDelegate {
     }
 
     @Override
-    public ResponseEntity<ApiSuccess> deleteCar(Long id) {
+    public ResponseEntity<ApiSuccess> deleteCar(Integer id) {
         carService.deleteCar(id);
         return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<ApiCar> switchAvailability(Long id) {
+    public ResponseEntity<ApiCar> switchAvailability(Integer id) {
         carService.switchAvailability(id);
         return ResponseEntity.ok().build();
     }

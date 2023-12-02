@@ -1,4 +1,4 @@
-package be.ucll.da.accountingservice;
+package be.ucll.da.billingservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -33,5 +35,46 @@ public class RabbitMqConfig {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
         rabbitTemplate.setMessageConverter(converter);
         return rabbitTemplate;
+    }
+
+    @Bean
+    public Declarables createValidateUserQueue(){
+        return new Declarables(new Queue("q.user-service.validate-user"));
+    }
+
+    @Bean
+    public Declarables createReserveCarQueue(){
+        return new Declarables(new Queue("q.car-service.reserve-car"));
+    }
+
+    @Bean
+    public Declarables createGetPriceCarQueue(){
+        return new Declarables(new Queue("q.car-service.getprice-car"));
+    }
+
+    @Bean
+    public Declarables createCreateBillQueue(){
+        return new Declarables(new Queue("q.bill-service.calculate-bill"));
+    }
+
+    @Bean
+    public Declarables createCreateCarQueue(){
+        return new Declarables(new Queue("q.car-service.create-car"));
+    }
+
+
+    @Bean
+    public Declarables createSwitchAvailabilityQueue(){
+        return new Declarables(new Queue("q.car-service.switch-availability"));
+    }
+
+    @Bean
+    public Declarables createCreateReservationQueue(){
+        return new Declarables(new Queue("q.reservation-service.create-reservation"));
+    }
+
+    @Bean
+    public Declarables creatFinalizeReservationQueue(){
+        return new Declarables(new Queue("q.reservation-service.finalize-reservation"));
     }
 }

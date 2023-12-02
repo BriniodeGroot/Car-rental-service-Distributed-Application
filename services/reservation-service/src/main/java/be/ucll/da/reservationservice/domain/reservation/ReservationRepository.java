@@ -7,8 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ReservationRepository extends CrudRepository<Reservation, Long> {
+public interface ReservationRepository extends CrudRepository<Reservation, Integer> {
 
-    List<Reservation> getReservationByNeededCar(Long car);
-    List<Reservation> findAllByUserLastName(String userLastName);
+    List<Reservation> getReservationByNeededCar(Integer car);
+
+    List<Reservation> findAllByUserId(Integer userId);
 }

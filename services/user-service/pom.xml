@@ -115,7 +115,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/user-service-api.yml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/user-service.yml</inputSpec>
                             <generatorName>java</generatorName>
                             <library>resttemplate</library>
                             <generateApis>true</generateApis>

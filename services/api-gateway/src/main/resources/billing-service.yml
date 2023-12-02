@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+  title: Billing Service v1
+  description: |-
+    API for Billing Service
+  termsOfService: http://swagger.io/terms/
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+paths:
+components:
+  schemas:
+    CalculateUserBillCommand:
+      type: object
+      properties:
+        reservationId:
+          type: integer
+        userId:
+          type: integer
+        price:
+          type: integer
+        preferredStart:
+          type: string
+          format: date
+          example: '2023-12-1'
+        preferredEnd:
+          type: string
+          format: date
+          example: '2023-12-4'
+    UserBillCreatedEvent:
+      type: object
+      properties:
+        reservationId:
+          type: integer
+        userId:
+          type: integer
+        billId:
+          type: integer
+        amount:
+          type: integer

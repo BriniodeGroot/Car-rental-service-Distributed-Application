@@ -133,15 +133,6 @@
 							</configOptions>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Client Generation Config Based On: https://blog.palo-it.com/en/spring-boot-client-and-server-code-generation-using-openapi-3-specs -->
-			<plugin>
-				<groupId>org.openapitools</groupId>
-				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>5.3.0</version>
-				<executions>
 					<execution>
 						<id>generate-client</id>
 						<goals>
@@ -238,8 +229,50 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>generate-bill</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/billing-service.yml</inputSpec>
+							<generatorName>java</generatorName>
+							<library>resttemplate</library>
+							<generateApis>true</generateApis>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateApiTests>false</generateApiTests>
+							<generateModels>true</generateModels>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<skipValidateSpec>true</skipValidateSpec>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<generateApis>false</generateApis>
+							<modelPackage>be.ucll.da.reservationservice.client.bill.api.model</modelPackage>
+
+							<configOptions>
+								<dateLibrary>java8</dateLibrary>
+								<java8>true</java8>
+								<useBeanValidation>false</useBeanValidation>
+								<performBeanValidation>false</performBeanValidation>
+								<interfaceOnly>false</interfaceOnly>
+								<useOptional>false</useOptional>
+								<serializableModel>true</serializableModel>
+								<openApiNullable>false</openApiNullable>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
+
+			<!-- Client Generation Config Based On: https://blog.palo-it.com/en/spring-boot-client-and-server-code-generation-using-openapi-3-specs -->
+<!--			<plugin>-->
+<!--				<groupId>org.openapitools</groupId>-->
+<!--				<artifactId>openapi-generator-maven-plugin</artifactId>-->
+<!--				<version>5.3.0</version>-->
+<!--				<executions>-->
+<!--					-->
+<!--				</executions>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 

@@ -10,9 +10,7 @@ public class Car {
 
     @Id
     @GeneratedValue
-    private Long id;
-
-
+    private int id;
     private String owner;
 
     private String model;
@@ -40,7 +38,7 @@ public class Car {
         this.available = available;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -10,34 +10,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
 
-//    @Bean
-//    public Queue createDoctorCreatedQueue() {
-//        return new Queue("q.doctor-created");
-//    }
-
-    @Bean
-    public Declarables createCarCreatedSchema(){
-        return new Declarables(
-                new FanoutExchange("x.car-created"),
-                new Queue("q.car-reservation-service" ),
-                //new Queue("q.car-notification-service"),
-                QueueBuilder.durable("q.car-notification-service")
-                        .withArgument("x-dead-letter-exchange","x.notification-failure")
-                        .withArgument("x-dead-letter-routing-key","fall-back")
-                        .build(),
-                new Binding("q.car-reservation-service", Binding.DestinationType.QUEUE, "x.car-created", "car-reservation-service", null),
-                new Binding("q.car-notification-service", Binding.DestinationType.QUEUE, "x.car-created", "car-notification-service", null));
-
-    }
-
-    @Bean
-    public Declarables createDeadLetterSchema(){
-        return new Declarables(
-                new DirectExchange("x.notification-failure"),
-                new Queue("q.fall-back-notification"),
-                new Binding("q.fall-back-notification", Binding.DestinationType.QUEUE,"x.notification-failure", "fall-back", null)
-        );
-    }
 
     @Bean
     public Jackson2JsonMessageConverter converter() {
@@ -49,5 +21,46 @@ public class RabbitMqConfig {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
         rabbitTemplate.setMessageConverter(converter);
         return rabbitTemplate;
+    }
+
+    @Bean
+    public Declarables createValidateUserQueue(){
+        return new Declarables(new Queue("q.user-service.validate-user"));
+    }
+
+    @Bean
+    public Declarables createReserveCarQueue(){
+        return new Declarables(new Queue("q.car-service.reserve-car"));
+    }
+
+    @Bean
+    public Declarables createGetPriceCarQueue(){
+        return new Declarables(new Queue("q.car-service.getprice-car"));
+    }
+
+    @Bean
+    public Declarables createCreateBillQueue(){
+        return new Declarables(new Queue("q.bill-service.calculate-bill"));
+    }
+
+    @Bean
+    public Declarables createCreateCarQueue(){
+        return new Declarables(new Queue("q.car-service.create-car"));
+    }
+
+
+    @Bean
+    public Declarables createSwitchAvailabilityQueue(){
+        return new Declarables(new Queue("q.car-service.switch-availability"));
+    }
+
+    @Bean
+    public Declarables createCreateReservationQueue(){
+        return new Declarables(new Queue("q.reservation-service.create-reservation"));
+    }
+
+    @Bean
+    public Declarables creatFinalizeReservationQueue(){
+        return new Declarables(new Queue("q.reservation-service.finalize-reservation"));
     }
 }

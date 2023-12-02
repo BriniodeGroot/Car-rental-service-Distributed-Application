@@ -32,13 +32,14 @@ public class MessageListener {
     public void onValidateOwner(ValidateUserCommand command) {
         LOGGER.info("Received command: " + command);
 
-        User user = userService.validateOwner(command.getUserId());
+        User user = userService.validateUser(command.getUserId());
         UserValidatedEvent event = new UserValidatedEvent();
         event.reservationId(command.getReservationId());
         event.userId(user.id());
         event.firstName(user.firstName());
         event.lastName(user.lastName());
         event.email(user.email());
+        event.isClient(user.isClient());
 
 
         LOGGER.info("Sending event: " + event);

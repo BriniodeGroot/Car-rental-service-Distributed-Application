@@ -1,0 +1,448 @@
+openapi: 3.0.3
+info:
+  title: Carrental API v1
+  description: |-
+    API for the carrental
+  termsOfService: http://swagger.io/terms/
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: Carrental
+paths:
+  /apigateway/car/owner:
+    get:
+      tags:
+        - Carrental
+      description: Get an overview of all cars by owner
+      operationId: getCarsByOwner
+      parameters:
+        - in: query
+          name: owner
+          schema:
+            type: string
+          description: Return all cars that match this
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiCarOverview'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /apigateway/car/create:
+    post:
+      tags:
+        - Carrental
+      description: Create a new Car
+      operationId: createCar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiCar'
+      responses:
+        '200':
+          description: Successful operation
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /apigateway/car/switchAvailability/{id}:
+    put:
+      tags:
+        - Carrental
+      summary: Toggle the availability of a car
+      description: Toggles the availability status of a car in the system
+      operationId: switchAvailability
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the car whose availability is to be toggled
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiCar'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Car Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /apigateway/reservation/{userId}:
+    get:
+      tags:
+        - Carrental
+      description: Get an overview of all reservations for an user
+      operationId: getAllReservationsByUserId
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: userId for get all reservations
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiReservationOverview'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /apigateway/reservation/create:
+    post:
+      tags:
+        - Carrental
+      description: Create a new Reservation
+      operationId: createReservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiReservationRequest'
+      responses:
+        '200':
+            description: Successful operation
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /apigateway/reservation/confirmation:
+    post:
+      tags:
+        - Carrental
+      description: Accept or Decline a previously requested reservation
+      operationId: createReservationConfirmation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiReservationConfirmation'
+      responses:
+        '200':
+          description: Successful operation
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /apigateway/car/search:
+    get:
+      tags:
+        - Carrental
+      summary: Search for the perfect car
+      description: Searches for cars based on type, location, and number of seats
+      operationId: searchForCars
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: The type of the car to search for
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: The location where to search for the car
+        - in: query
+          name: seats
+          schema:
+            type: integer
+          description: The number of seats required in the car
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiCarOverview'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: No Cars Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /apigateway/reservation/price/{reservationId}:
+    get:
+      tags:
+        - Carrental
+      summary: Get price of reservation by reservationId
+      description: Get price of reservation by reservationId
+      operationId: getPriceReservation
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+          description: reservation id to get price of reservation
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiPrice'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: No Reservations Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+components:
+  schemas:
+    ApiCarOverview:
+      type: array
+      items:
+        $ref: '#/components/schemas/ApiCar'
+    ApiCar:
+      type: object
+      properties:
+        id:
+          type: integer
+        owner:
+          type: string
+        model:
+         type: string
+        type:
+         type: string
+        location:
+          type: string
+        price:
+          type: integer
+        seats:
+          type: integer
+        available:
+          type: boolean
+
+    CarCreateCommand:
+      type: object
+      properties:
+        owner:
+          type: string
+        model:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+        price:
+          type: integer
+        seats:
+          type: integer
+        available:
+          type: boolean
+
+    CarCreatedEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        owner:
+          type: string
+        model:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+        price:
+          type: integer
+        seats:
+          type: integer
+        available:
+          type: boolean
+
+    ApiReservationOverview:
+      type: array
+      items:
+        $ref: '#/components/schemas/ApiReservation'
+    ApiReservation:
+      type: object
+      properties:
+        reservation:
+          type: object
+          properties:
+            id:
+              type: integer
+            preferredStart:
+              type: string
+              format: date
+            preferredEnd:
+              type: string
+              format: date
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            firstName:
+              type: string
+            lastName:
+              type: string
+            email:
+              type: string
+        car:
+          type: object
+          properties:
+            id:
+              type: integer
+            model:
+              type: string
+            type:
+              type: string
+            location:
+              type: string
+            seats:
+              type: integer
+        price:
+          type: integer
+
+    SwitchAvailabilityCommand:
+      type: object
+      properties:
+        carId:
+          type: integer
+
+    SwitchAvailabilityEvent:
+      type: object
+      properties:
+        carId:
+          type: integer
+
+    ApiReservationRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+        neededCar:
+          type: integer
+          example: 11
+        preferredStart:
+          type: string
+          format: date
+          example: '2023-12-1'
+        preferredEnd:
+          type: string
+          format: date
+          example: '2023-12-4'
+
+    ApiReservationRequestResponse:
+      type: object
+      properties:
+        reservationRequestNumber:
+          type: string
+          example: "23-11-5678"
+
+    ApiReservationCommand:
+      type: object
+      properties:
+        userId:
+          type: integer
+        neededCar:
+          type: integer
+          example: 11
+        preferredStart:
+          type: string
+          format: date
+          example: '2023-12-1'
+        preferredEnd:
+          type: string
+          format: date
+          example: '2023-12-4'
+
+    ApiReservationConfirmation:
+      type: object
+      properties:
+        reservationRequestNumber:
+          type: string
+          example: "23-11-5678"
+        acceptProposedReservation:
+          type: boolean
+
+    ApiPrice:
+      type: object
+      properties:
+        price:
+          type: integer
+
+    ApiError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'Functional code specifying the error'
+          example: '2300'
+        message:
+          type: string
+          description: 'Brief explanation about the error, for more information consult the Doctor Service team'

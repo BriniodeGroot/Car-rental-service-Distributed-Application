@@ -4,21 +4,20 @@ import org.springframework.stereotype.Component;
 import be.ucll.da.carservice.api.model.ApiCar;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class CarService {
 
     private final CarRepository repository;
-    private final EventSender eventSender;
+
 
     @Autowired
-    public CarService(CarRepository repository, EventSender eventSender) {
+    public CarService(CarRepository repository) {
         this.repository = repository;
-        this.eventSender = eventSender;
+
     }
 
-    public void createCar(ApiCar data) {
+    public Car createCar(ApiCar data) {
         Car car = new Car(
              data.getOwner(),
              data.getModel(),
@@ -29,11 +28,10 @@ public class CarService {
              data.getAvailable()
         );
 
-        repository.save(car);
-        eventSender.sendCarCreatedEvent(car);
+        return repository.save(car);
     }
 
-    public void deleteCar(Long id) {
+    public void deleteCar(Integer id) {
         repository.deleteById(id);
     }
 
@@ -53,18 +51,24 @@ public class CarService {
         return repository.findAllByOwner(owner);
     }
 
-    public Car switchAvailability(long id) {
+    public Car switchAvailability(Integer id) {
         Car car = repository.findById(id)
                 .orElseThrow(() -> new CarNotFoundException("Car with ID: " + id + " not found"));
         car.setAvailable(!car.getAvailable());
         return repository.save(car);
     }
 
-    public List<Car> searchCars(String type, String location, int seats) {
+    public List<Car> searchCars(String type, String location, Integer seats) {
         return repository.findByTypeAndLocationAndSeats(type, location, seats);
     }
 
-    public Car reserveCar(Long neededCar) {
+    public Car reserveCar(Integer neededCar) {
+        Car car = repository.findById(neededCar)
+                .orElseThrow(() -> new CarNotFoundException("Car with ID: " + neededCar + " not found"));
+        return car;
+    }
+
+    public Car getCarById(Integer neededCar) {
         Car car = repository.findById(neededCar)
                 .orElseThrow(() -> new CarNotFoundException("Car with ID: " + neededCar + " not found"));
         return car;

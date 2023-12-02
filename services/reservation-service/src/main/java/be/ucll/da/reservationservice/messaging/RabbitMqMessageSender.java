@@ -7,9 +7,15 @@ package be.ucll.da.reservationservice.messaging;
 //import be.ucll.da.reservationservice.client.owner.api.model.ValidateOwnerCommand;
 //import be.ucll.da.reservationservice.client.room.api.model.ReleaseRoomCommand;
 //import be.ucll.da.reservationservice.client.room.api.model.ReserveRoomCommand;
+import be.ucll.da.reservationservice.api.model.ApiReservation;
+import be.ucll.da.reservationservice.api.model.ReservationCreatedEvent;
+import be.ucll.da.reservationservice.client.bill.api.model.CalculateUserBillCommand;
+import be.ucll.da.reservationservice.client.car.api.model.GetPriceCarCommand;
 import be.ucll.da.reservationservice.client.car.api.model.ReserveCarCommand;
 import be.ucll.da.reservationservice.client.notification.api.model.SendEmailCommand;
 import be.ucll.da.reservationservice.client.user.api.model.ValidateUserCommand;
+
+import be.ucll.da.reservationservice.domain.reservation.Reservation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -30,9 +36,9 @@ public class RabbitMqMessageSender {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendValidateUserCommand(Long userId, Long reservationId) {
+    public void sendValidateUserCommand(Integer reservationId, Integer userId) {
         var command = new ValidateUserCommand();
-        command.reservationId(reservationId);
+        command.reservationId(Math.toIntExact(reservationId));
         command.userId(userId);
         sendToQueue("q.user-service.validate-user", command);
     }
@@ -40,8 +46,39 @@ public class RabbitMqMessageSender {
     public void sendValidateCarCommand(Integer reservationId, Integer neededCar) {
         var command = new ReserveCarCommand();
         command.reservationId(reservationId);
-        command.neededCar(neededCar);
+        command.carNeeded(neededCar);
         sendToQueue("q.car-service.reserve-car", command);
+    }
+
+    public void sendGetPriceCarCommand(Integer reservationId,Integer neededCar) {
+        var command = new GetPriceCarCommand();
+        command.reservationId(reservationId);
+        command.neededCar(neededCar);
+        sendToQueue("q.car-service.getprice-car", command);
+    }
+
+    public void sendCalculateUserBillCommand(Integer reservationId, Integer userId, Integer price, LocalDate preferredStart, LocalDate preferredEnd) {
+        var command = new CalculateUserBillCommand();
+        command.reservationId(reservationId);
+        command.userId(userId);
+        command.price(price);
+        command.preferredStart(preferredStart);
+        command.preferredEnd(preferredEnd);
+        sendToQueue("q.bill-service.calculate-bill", command);
+
+    }
+
+    public void sendReservationFinalizedEvent(Reservation reservation, boolean isAccepted) {
+        var event = new ReservationCreatedEvent();
+        event.id(reservation.getId());
+        event.userId(reservation.getUserId());
+        event.carId(reservation.getNeededCar());
+        event.preferredStart(reservation.getPreferredStart());
+        event.preferredEnd(reservation.getPreferredEnd());
+        event.price(reservation.getPrice());
+
+        LOGGER.info("Sending event: " + event);
+        this.rabbitTemplate.convertAndSend("x.reservation-finalized", "", event);
     }
 
 //    public void sendValidateDoctorCommand(Integer appointmentId, String fieldOfExpertise) {

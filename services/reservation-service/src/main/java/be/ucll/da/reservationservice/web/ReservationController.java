@@ -19,12 +19,6 @@ public class ReservationController implements ReservationApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> createReservation(ApiReservation data) {
-        reservationService.createReservation(data);
-        return ResponseEntity.ok().build();
-    }
-
-    @Override
     public ResponseEntity<ApiReservationRequestResponse> createReservationRequest(ApiReservationRequest apiReservationRequest) {
         ApiReservationRequestResponse response = new ApiReservationRequestResponse();
         response.reservationRequestNumber(reservationService.registerRequest(apiReservationRequest));
@@ -39,10 +33,28 @@ public class ReservationController implements ReservationApiDelegate {
     }
 
     @Override
-    public ResponseEntity<ApiReservations> searchReservationsByLastName(String userLastName) {
+    public ResponseEntity<ApiReservations> getAllReservations() {
+        ApiReservations reservations = new ApiReservations();
+        Iterable<Reservation> reservationList = reservationService.getAllReservations();
+        for (Reservation reservation : reservationList) {
+            reservations.add(toDto(reservation));
+        }
+
+        return ResponseEntity.ok(reservations);
+    }
+
+    @Override
+    public ResponseEntity<ApiReservationStatus> getReservationStatus(Integer reservationId) {
+        ApiReservationStatus apiReservationStatus = new ApiReservationStatus();
+        apiReservationStatus.setStatus(reservationService.getStatus(reservationId));
+        return ResponseEntity.ok(apiReservationStatus);
+    }
+
+    @Override
+    public ResponseEntity<ApiReservations> searchReservationsByUserId(Integer userId) {
         ApiReservations reservations = new ApiReservations();
         reservations.addAll(
-                reservationService.searchReservationsByLastName(userLastName).stream()
+                reservationService.searchReservationsByUserId(userId).stream()
                         .map(this::toDto)
                         .toList()
         );
@@ -50,12 +62,30 @@ public class ReservationController implements ReservationApiDelegate {
         return ResponseEntity.ok(reservations);
     }
 
+    @Override
+    public ResponseEntity<ApiPrice> getPriceByReservationId(Integer reservationId) {
+        ApiPrice apiPrice = new ApiPrice();
+        apiPrice.setPrice(reservationService.getPrice(reservationId));
+        return ResponseEntity.ok(apiPrice);
+    }
+
+//    @Override
+//    public ResponseEntity<ApiReservations> searchReservationsByLastName(String userLastName) {
+//        ApiReservations reservations = new ApiReservations();
+//        reservations.addAll(
+//                reservationService.searchReservationsByLastName(userLastName).stream()
+//                        .map(this::toDto)
+//                        .toList()
+//        );
+//
+//        return ResponseEntity.ok(reservations);
+//    }
+
     private ApiReservation toDto(Reservation reservation) {
         return new ApiReservation()
                 .id(reservation.getId())
+                .userId(reservation.getUserId())
                 .neededCar(reservation.getNeededCar())
-                .userFirstName(reservation.getUserFirstName())
-                .userLastName(reservation.getUserLastName())
                 .preferredStart(reservation.getPreferredStart())
                 .preferredEnd(reservation.getPreferredEnd());
     }

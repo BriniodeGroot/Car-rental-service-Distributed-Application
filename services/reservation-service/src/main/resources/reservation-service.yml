@@ -81,20 +81,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
-  /api/v1/reservation/search:
+  /api/v1/reservations/{reservationId}/status:
     get:
       tags:
         - Reservation
-      summary: Search for reservations by user's last name
-      description: Retrieves a list of reservations based on the last name of the user
-      operationId: searchReservationsByLastName
+      summary: Get the status of a specific reservation
+      description: Retrieves the status of a reservation based on its unique identifier
+      operationId: getReservationStatus
       parameters:
-        - in: query
-          name: userLastName
+        - in: path
+          name: reservationId
           required: true
           schema:
-            type: string
-          description: The last name of the user to search for in reservations
+            type: integer
+          description: Unique identifier of the reservation
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiReservationStatus'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Reservation Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/reservations:
+    get:
+      tags:
+        - Reservation
+      summary: Get all reservations
+      description: Retrieves a list of all reservations in the system
+      operationId: getAllReservations
       responses:
         '200':
           description: Successful operation
@@ -102,6 +135,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiReservations'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/reservation/search/{userId}:
+    get:
+      tags:
+        - Reservation
+      summary: Search for reservations by user's id
+      description: Retrieves a list of reservations based on the id of the user
+      operationId: searchReservationsByUserId
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: user id to search for reservations
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiReservations'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: No Reservations Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/reservation/price/{reservationId}:
+    get:
+      tags:
+        - Reservation
+      summary: Get price of reservation by reservationId
+      description: Get price of reservation by reservationId
+      operationId: getPriceByReservationId
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+          description: reservation id to get price of reservation
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiPrice'
         '400':
           description: Bad Request
           content:
@@ -133,22 +240,12 @@ components:
       properties:
         id:
           type: integer
-          format: int64
-          example: 10
         userId:
           type: integer
-          format: int64
           example: 10
         neededCar:
           type: integer
-          format: int64
           example: 11
-        userFirstName:
-          type: string
-          example: 'Patrick'
-        userLastName:
-          type: string
-          example: 'Willems'
         preferredStart:
           type: string
           format: date
@@ -157,23 +254,17 @@ components:
           type: string
           format: date
           example: '2023-12-4'
+
     ReservationCreatedEvent:
       type: object
       properties:
+        id:
+          type: integer
         userId:
           type: integer
-          format: int64
-          example: 10
-        reservationRequestNumber:
-          type: string
-          example: "23-11-5678"
         carId:
           type: integer
-          format: int64
           example: 11
-        userLastName:
-          type: string
-          example: 'Willems'
         preferredStart:
           type: string
           format: date
@@ -182,6 +273,8 @@ components:
           type: string
           format: date
           example: '2023-12-4'
+        price:
+          type: integer
 
     ApiError:
       type: object
@@ -199,18 +292,9 @@ components:
       properties:
         userId:
           type: integer
-          format: int64
-          example: 10
         neededCar:
           type: integer
-          format: int64
           example: 11
-        userFirstName:
-          type: string
-          example: 'Patrick'
-        userLastName:
-          type: string
-          example: 'Willems'
         preferredStart:
           type: string
           format: date
@@ -219,6 +303,36 @@ components:
           type: string
           format: date
           example: '2023-12-4'
+
+    ApiReservationCommand:
+      type: object
+      properties:
+        userId:
+          type: integer
+        neededCar:
+          type: integer
+          example: 11
+        preferredStart:
+          type: string
+          format: date
+          example: '2023-12-1'
+        preferredEnd:
+          type: string
+          format: date
+          example: '2023-12-4'
+
+    ApiPrice:
+      type: object
+      properties:
+        price:
+          type: integer
+
+    ApiReservationStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'confirmed' # Possible values: confirmed, pending, cancelled, etc.
 
     ApiReservationRequestResponse:
       type: object

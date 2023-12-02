@@ -8,13 +8,19 @@ public class UserService {
 
     private final Faker faker = new Faker();
 
-    public User validateOwner(Integer id) {
+    public User validateUser(Integer id) {
         String firstName = faker.name().firstName();
         String lastName = faker.name().lastName();
+        System.out.println("user id is " + id);
+
+        //String firstName = "Nick";
+        //String lastName = "Hayen";
 
         String email = firstName + "." + lastName + "@google.com";
 
-        if (Math.random() > 0.3) {
+        double randomNumber = Math.random();
+        System.out.println("het random nummer is: " + randomNumber);
+        if (randomNumber > 0.3) {
             return new User(id, firstName, lastName, email, true);
         } else {
             return new User(id, firstName, lastName, email, false);

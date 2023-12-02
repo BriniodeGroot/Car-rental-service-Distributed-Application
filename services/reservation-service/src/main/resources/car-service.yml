@@ -101,7 +101,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
           description: The unique identifier of the car whose availability is to be toggled
       responses:
         '200':
@@ -142,7 +141,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
           description: The unique identifier of the car to be deleted
       responses:
         '200':
@@ -192,7 +190,6 @@ paths:
           name: seats
           schema:
             type: integer
-            format: int32
           description: The number of seats required in the car
       responses:
         '200':
@@ -232,8 +229,6 @@ components:
       properties:
         id:
           type: integer
-          format: int64
-          example: 10
         owner:
           type: string
           example: 'Brinio'
@@ -266,7 +261,23 @@ components:
       properties:
         reservationId:
           type: integer
+        carNeeded:
+          type: integer
+
+    GetPriceCarCommand:
+      type: object
+      properties:
+        reservationId:
+          type: integer
         neededCar:
+          type: integer
+
+    GetPriceCarEvent:
+      type: object
+      properties:
+        reservationId:
+          type: integer
+        price:
           type: integer
 
     ReservedCarEvent:
@@ -274,10 +285,8 @@ components:
       properties:
         reservationId:
           type: integer
-          format: int64
         carId:
           type: integer
-          format: int64
         owner:
           type: string
         model:

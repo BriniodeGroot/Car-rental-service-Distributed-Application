@@ -9,18 +9,16 @@ public class Reservation {
 
     @Id
     @GeneratedValue
-    private Long id;
-    private Long userId;
+    private int id;
+    private int userId;
 
     boolean isValidUserId;
 
     private String userEmail;
 
-    private Long neededCar;
+    private int neededCar;
 
-    private String userFirstName;
-
-    private String userLastName;
+    private int price;
 
     private LocalDate preferredStart;
 
@@ -31,34 +29,38 @@ public class Reservation {
 
     //protected Reservation(Integer ownerId, Long neededCar, String userFirstName, String userLastName, @Valid LocalDate preferredStart, @Valid LocalDate preferredEnd) {}
 
-    public Reservation(Long userId, Long neededCar, String userFirstName, String userLastName, LocalDate preferredStart, LocalDate preferredEnd) {
+
+    public Reservation() {
+    }
+
+    public Reservation(Integer userId, Integer neededCar, LocalDate preferredStart, LocalDate preferredEnd) {
         this.userId = userId;
         this.neededCar = neededCar;
-        this.userFirstName = userFirstName;
-        this.userLastName = userLastName;
         this.preferredStart = preferredStart;
         this.preferredEnd = preferredEnd;
         this.status = ReservationStatus.REGISTERED;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public Long getUserId() { return userId; }
+    public Integer getUserId() { return userId; }
 
     public String getUserEmail() { return userEmail; }
 
-    public Long getNeededCar() {
+    public Integer getNeededCar() {
         return neededCar;
     }
 
-    public String getUserFirstName() {
-        return userFirstName;
+    public Integer getPrice() { return price; }
+
+    public void setPreferredStart(LocalDate preferredStart) {
+        this.preferredStart = preferredStart;
     }
 
-    public String getUserLastName() {
-        return userLastName;
+    public void setPreferredEnd(LocalDate preferredEnd) {
+        this.preferredEnd = preferredEnd;
     }
 
     public LocalDate getPreferredStart() {
@@ -86,9 +88,13 @@ public class Reservation {
         this.isValidUserId= false;
     }
 
-    public void carSelected(Long selectedCar) {
+    public void carSelected(Integer selectedCar) {
         this.status = ReservationStatus.BOOKING_CAR;
         this.neededCar = selectedCar;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
     public void noCarsFound() {
