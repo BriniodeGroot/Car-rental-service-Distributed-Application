@@ -96,6 +96,19 @@ public class RabbitMqConfig {
                 new Binding("q.availability-switched.api-gateway", Binding.DestinationType.QUEUE, "x.car-switch", "q.availability-switched.api-gateway", null));
     }
 
+    @Bean
+    public Declarables createReservationFinalizedExchange(){
+        return new Declarables(
+                new FanoutExchange("x.reservation-finalized"),
+                new Queue("q.reservation-finalized.api-gateway" ),
+                new Binding("q.reservation-finalized.api-gateway", Binding.DestinationType.QUEUE, "x.reservation-finalized", "q.reservation-finalized.api-gateway", null));
+    }
+
+    @Bean
+    public Declarables creatDeleteCarQueue(){
+        return new Declarables(new Queue("q.car-service.delete-car"));
+    }
+
 
 
 

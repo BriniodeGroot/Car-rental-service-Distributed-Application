@@ -302,6 +302,12 @@ components:
         available:
           type: boolean
 
+    ApiCarId:
+      type: object
+      properties:
+        id:
+          type: integer
+
     ApiError:
       type: object
       properties:

@@ -77,4 +77,9 @@ public class RabbitMqConfig {
     public Declarables creatFinalizeReservationQueue(){
         return new Declarables(new Queue("q.reservation-service.finalize-reservation"));
     }
+
+    @Bean
+    public Declarables creatDeleteCarQueue(){
+        return new Declarables(new Queue("q.car-service.delete-car"));
+    }
 }

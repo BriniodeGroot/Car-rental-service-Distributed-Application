@@ -134,4 +134,9 @@ public class RabbitMqConfig {
         return new Declarables(new Queue("q.notification-service.send-email"));
     }
 
+    @Bean
+    public Declarables creatDeleteCarQueue(){
+        return new Declarables(new Queue("q.car-service.delete-car"));
+    }
+
 }

@@ -259,6 +259,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
+  /apigateway/car/delete/{id}:
+    delete:
+      tags:
+        - Carrental
+      summary: Delete a car
+      description: Deletes a car from the system based on its unique identifier
+      operationId: deleteCarId
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the car to be deleted
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Car Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
 components:
   schemas:
     ApiCarOverview:
@@ -434,6 +470,12 @@ components:
       type: object
       properties:
         price:
+          type: integer
+
+    ApiCarId:
+      type: object
+      properties:
+        id:
           type: integer
 
     ApiError:

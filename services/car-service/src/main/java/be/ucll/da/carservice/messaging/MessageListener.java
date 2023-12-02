@@ -3,6 +3,7 @@ package be.ucll.da.carservice.messaging;
 import be.ucll.da.carservice.api.model.*;
 import be.ucll.da.carservice.domain.Car;
 import be.ucll.da.carservice.domain.CarService;
+import be.ucll.da.carservice.api.model.ApiCarId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -104,5 +105,10 @@ public class MessageListener {
 
         LOGGER.info("Sending event: " + event);
         this.rabbitTemplate.convertAndSend("x.car-switch", "", event);
+    }
+
+    @RabbitListener(queues = {"q.car-service.delete-car"})
+    public void OnDeleteCar(ApiCarId command) {
+        carService.deleteCar(command.getId());
     }
 }

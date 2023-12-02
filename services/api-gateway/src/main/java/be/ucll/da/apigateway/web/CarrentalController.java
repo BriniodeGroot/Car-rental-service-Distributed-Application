@@ -145,6 +145,13 @@ public class CarrentalController implements CarrentalApiDelegate {
         return ResponseEntity.ok(apiPrice);
     }
 
+    @Override
+    public ResponseEntity<Void> deleteCarId(Integer id) {
+        eventSender.sendDeleteCar(id);
+        carRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
     private ApiCar toDto(Car car) {
         return new ApiCar()
                 .id(car.getId())

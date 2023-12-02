@@ -11,6 +11,7 @@ import be.ucll.da.apigateway.api.model.SwitchAvailabilityCommand;
 import be.ucll.da.apigateway.api.model.ApiReservationRequest;
 import be.ucll.da.apigateway.api.model.ApiReservationCommand;
 import be.ucll.da.apigateway.api.model.ApiReservationConfirmation;
+import be.ucll.da.apigateway.api.model.ApiCarId;
 
 import java.time.LocalDate;
 
@@ -61,6 +62,12 @@ public class RabbitMqMessageSender {
 
     public void sendFinalizeConfirmationCommand(ApiReservationConfirmation command) {
         sendToQueue("q.reservation-service.finalize-reservation", command);
+    }
+
+    public void sendDeleteCar(Integer carId) {
+        ApiCarId command = new ApiCarId();
+        command.setId(carId);
+        sendToQueue("q.car-service.delete-car", command);
     }
 
     private void sendToQueue(String queue, Object message) {
