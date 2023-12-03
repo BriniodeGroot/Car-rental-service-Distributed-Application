@@ -88,13 +88,14 @@ public class Reservation {
         this.isValidUserId= false;
     }
 
-    public void carSelected(Integer selectedCar) {
+    public void carSelected() {
         this.status = ReservationStatus.BOOKING_CAR;
-        this.neededCar = selectedCar;
+
     }
 
     public void setPrice(Integer price) {
         this.price = price;
+        this.status = ReservationStatus.FINISHED;
     }
 
     public void noCarsFound() {
@@ -107,6 +108,14 @@ public class Reservation {
 
     public void doubleBooking() {
         this.status = ReservationStatus.DOUBLE_BOOKING;
+    }
+
+    public void getPriceCar() {
+        this.status = ReservationStatus.GET_PRICE_CAR;
+    }
+
+    public void calculateBill() {
+        this.status = ReservationStatus.CALCULATE_BILL;
     }
 
     public void accept() {

@@ -29,7 +29,7 @@ public class MessageListener {
     }
 
     @RabbitListener(queues = {"q.user-service.validate-user"})
-    public void onValidateOwner(ValidateUserCommand command) {
+    public void onValidateUser(ValidateUserCommand command) {
         LOGGER.info("Received command: " + command);
 
         User user = userService.validateUser(command.getUserId());

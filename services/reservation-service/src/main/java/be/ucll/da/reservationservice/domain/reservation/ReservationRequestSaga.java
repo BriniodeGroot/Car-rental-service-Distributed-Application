@@ -50,6 +50,7 @@ public class ReservationRequestSaga {
 
     public void executeSaga(Integer id, ReservedCarEvent event) {
         Reservation reservation = getReservationById(id);
+        reservation.carSelected();
 
         List<Reservation> reservations = repository.getReservationByNeededCar(event.getCarId());
         reservations.remove(reservation);
@@ -86,6 +87,7 @@ public class ReservationRequestSaga {
 
     public void executeSaga(Integer id, GetPriceCarEvent event) {
         Reservation reservation = getReservationById(id);
+        reservation.calculateBill();
         eventSender.sendCalculateUserBillCommand(reservation.getId(), reservation.getUserId(), event.getPrice(), reservation.getPreferredStart(), reservation.getPreferredEnd());
     }
 
@@ -95,72 +97,13 @@ public class ReservationRequestSaga {
         eventSender.sendReservationFinalizedEvent(reservation, true);
         eventSender.sendEmail(reservation.getUserEmail(), "This is the price of your booking: " + event.getAmount());
     }
-
-//    public void executeSaga(Integer id, DoctorsOnPayrollEvent event) {
-//        Appointment appointment = getAppointmentById(id);
-//
-//        Integer selectedDoctor = null;
-//        if (event.getDoctors() != null && !event.getDoctors().isEmpty()) {
-//            for (DoctorOnPayroll doctor : event.getDoctors()) {
-//                List<Appointment> appointments = repository.getAppointmentsForDoctorOnDay(doctor.getId(), appointment.getPreferredDay());
-//
-//                if (appointments.isEmpty()) {
-//                    selectedDoctor = doctor.getId();
-//                    break;
-//                }
-//            }
-//        }
-//
-//        if (selectedDoctor != null) {
-//            appointment.doctorSelected(selectedDoctor);
-//            eventSender.sendBookRoomCommand(appointment.getId(), appointment.getPreferredDay());
-//        } else {
-//            appointment.noDoctorsFound();
-//            eventSender.sendEmail(appointment.getPatientEmail(), generateMessage(appointment.getId(), "You cannot book an appointment, we have no doctors for your requested expertise available on this day."));
-//        }
-//    }
-
-//    public void executeSaga(Integer id, RoomReservedEvent event) {
-//        Appointment appointment = getAppointmentById(id);
-//        if (event.getRoomAvailable()) {
-//            appointment.roomAvailable(event.getRoomId());
-//            eventSender.sendOpenAccountCommand(appointment.getId(), appointment.getPatientId(), appointment.getDoctor(), appointment.getRoomId(), appointment.getPreferredDay());
-//        } else {
-//            appointment.noRoomAvailable();
-//            eventSender.sendEmail(appointment.getPatientEmail(), generateMessage(appointment.getId(), "You cannot book an appointment, we have no room available on your preferred day."));
-//        }
-//    }
-
-//    public void executeSaga(Integer id, PatientAccountCreatedEvent event) {
-//        Appointment appointment = getAppointmentById(id);
-//
-//        if (event.getAccountCreated()) {
-//            // Final check to make sure that another request that went through in parallel does not also succeed
-//            List<Appointment> appointments = repository.getAppointmentsForDoctorOnDay(appointment.getDoctor(), appointment.getPreferredDay());
-//            if (appointments.isEmpty()) {
-//                appointment.finalizeAppointment(event.getAccountId());
-//                eventSender.sendEmail(appointment.getPatientEmail(), generateMessage(appointment.getId(), "Proposal for appointment registered. Please accept or decline."));
-//            } else {
-//                appointment.doubleBooking();
-//                eventSender.sendReleaseRoomCommand(appointment.getId(), appointment.getRoomId(), appointment.getPreferredDay());
-//                eventSender.sendCloseAccountCommand(appointment.getId(), appointment.getPatientId(), appointment.getAccountId());
-//                eventSender.sendEmail(appointment.getPatientEmail(), generateMessage(appointment.getId(), "You cannot book an appointment, there was an error in our system."));
-//            }
-//        } else {
-//            appointment.noInsurance();
-//            eventSender.sendReleaseRoomCommand(appointment.getId(), appointment.getRoomId(), appointment.getPreferredDay());
-//            eventSender.sendEmail(appointment.getPatientEmail(), generateMessage(appointment.getId(), "You cannot book an appointment, you are not insured."));
-//        }
-//
-//
-//    }
-
     public void accept(Integer reservationId) {
         Reservation reservation = getReservationById(reservationId);
 
         if (reservation.getStatus() == ReservationStatus.REQUEST_REGISTERED) {
             eventSender.sendGetPriceCarCommand(reservationId, reservation.getNeededCar());
             reservation.accept();
+            reservation.getPriceCar();
         } else {
             throw new RuntimeException("AppointmentRequest is not in a valid status to be accepted");
         }
